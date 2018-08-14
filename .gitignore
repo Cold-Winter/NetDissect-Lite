@@ -9,8 +9,8 @@ __pycache__/
 *.tar
 # C extensions
 *.so
-./dataset/
-./result/
+dataset/
+result/
 # Distribution / packaging
 .Python
 build/
