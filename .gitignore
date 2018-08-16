@@ -11,6 +11,8 @@ __pycache__/
 *.so
 dataset/
 result/
+result_depthwise/
+result_depthwise_last/
 # Distribution / packaging
 .Python
 build/
