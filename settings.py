@@ -3,7 +3,7 @@ GPU = True                                  # running on GPU is highly suggested
 TEST_MODE = False                           # turning on the testmode means the code will run on a small dataset.
 CLEAN = True                               # set to "True" if you want to clean the temporary large files after generating result
 MODEL = 'resnet26'                          # model arch: resnet18, alexnet, resnet50, densenet161
-DATASET = 'imagenet'                       # model trained on: places365 or imagenet
+DATASET = 'cifar100'                       # model trained on: places365 or imagenet
 QUANTILE = 0.005                            # the threshold used for activation
 SEG_THRESHOLD = 0.04                        # the threshold used for visualization
 SCORE_THRESHOLD = 0.04                      # the threshold used for IoU score (in HTML file)
@@ -36,6 +36,8 @@ if DATASET == 'places365':
     NUM_CLASSES = 365
 elif DATASET == 'imagenet':
     NUM_CLASSES = 1000
+elif DATASET == 'cifar100':
+    NUM_CLASSES = 100
 if MODEL == 'resnet18':
     FEATURE_NAMES = ['layer4']
     if DATASET == 'places365':
@@ -43,6 +45,14 @@ if MODEL == 'resnet18':
         MODEL_PARALLEL = True
     elif DATASET == 'imagenet':
         MODEL_FILE = 'zoo/imagenet12.t7'
+        MODEL_PARALLEL = False
+if MODEL == 'resnet26':
+    FEATURE_NAMES = ['blocks.2.3.SeparableConv2d2.pointwise.0']
+    if DATASET == 'places365':
+        MODEL_FILE = 'zoo/imagenet12.t7'
+        MODEL_PARALLEL = True
+    elif DATASET == 'cifar100':
+        MODEL_FILE = 'zoo/cifar100.t7'
         MODEL_PARALLEL = False
 elif MODEL == 'densenet161':
     FEATURE_NAMES = ['features']
@@ -64,7 +74,7 @@ if TEST_MODE:
     OUTPUT_FOLDER += "_test"
 else:
     WORKERS = 12
-    BATCH_SIZE = 128
+    BATCH_SIZE = 4
     TALLY_BATCH_SIZE = 16
     TALLY_AHEAD = 4
     INDEX_FILE = 'index.csv'

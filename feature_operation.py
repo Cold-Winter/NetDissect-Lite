@@ -64,11 +64,11 @@ class FeatureOperator:
             if settings.GPU:
                 input = input.cuda()
             input_var = V(input,volatile=True)
-            logit = model.forward(input_var)
+            logit = model.forward(input_var,0)
             while np.isnan(logit.data.max()):
                 print("nan") #which I have no idea why it will happen
                 del features_blobs[:]
-                logit = model.forward(input_var)
+                logit = model.forward(input_var,0)
             if maxfeatures[0] is None:
                 # initialize the feature variable
                 for i, feat_batch in enumerate(features_blobs):

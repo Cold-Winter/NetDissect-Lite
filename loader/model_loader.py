@@ -3,18 +3,22 @@ import torch
 import torchvision
 from models import resnet
 from models.base import BasicBlock
-
+import torch.nn as nn
 def loadmodel(hook_fn):
-    if model == 'Resnet26':
-        num_classes = 1000
+
+    if settings.MODEL == 'resnet26':
+        num_classes = [1000]
         layer_config = [4, 4, 4]
 
         rnet = resnet.FlatResNet26(BasicBlock, layer_config, num_classes)
 
         source = settings.MODEL_FILE
             # load pretrained weights into flat ResNet
-
-        checkpoint = load_weights_to_flatresnet(source, rnet, num_classes, dataset, mode)
+        print source
+        checkpoint = load_weights_to_flatresnet(source, rnet, num_classes, 'submit')
+        print checkpoint
+        for name, m in checkpoint.named_modules():
+            print name
         #checkpoint = torch.load(settings.MODEL_FILE)
 #         if type(checkpoint).__name__ == 'OrderedDict' or type(checkpoint).__name__ == 'dict':
 #             model = torchvision.models.__dict__[settings.MODEL](num_classes=settings.NUM_CLASSES)
@@ -27,35 +31,16 @@ def loadmodel(hook_fn):
 #         else:
         model = checkpoint
     for name in settings.FEATURE_NAMES:
-        model._modules.get(name).register_forward_hook(hook_fn)
+        #print name
+        #print model._modules.get('conv1')._modules.get('depthwise')[0].register_forward_hook(hook_fn)
+        print model._modules.get('blocks')._modules.get('2')._modules.get('3')._modules.get('SeparableConv2d1')._modules.get('depthwise')[0].register_forward_hook(hook_fn)
+        #model._modules.get(name).register_forward_hook(hook_fn)
     if settings.GPU:
         model.cuda()
     model.eval()
     return model
 
-def get_model(model, num_classes, dataset = None, mode = 'train', dropout_list=None):
-    test_model = "cifar100"
-    if model == 'Resnet26':
-        layer_config = [4, 4, 4]
-    if dataset == test_model:
-            rnet = resnet_sharing.FlatResNet26(BasicBlock_sharing, layer_config, num_classes)
-    else:
-            rnet = resnet.FlatResNet26(BasicBlock, layer_config, num_classes)
-
-        if dataset is not None:
-            if dataset == 'imagenet12':
-                source = './pretrained_model_on_train_and_val/imagenet12_separableConv/' +  dataset + '.t7'
-            elif dataset == test_model:
-                source = './log_sharing/' +  dataset + '/' + dataset + '.t7'
-        else:
-                source = './log/' + dataset + '/' + dataset + '.t7'
-            # load pretrained weights into flat ResNet
-        if dataset == test_model:
-            rnet = submit_sharing(source, rnet, num_classes, dataset, mode)
-        rnet = load_weights_to_flatresnet(source, rnet, num_classes, dataset, mode)
-    return rnet
-
-def load_weights_to_flatresnet(source, net, num_classes, dataset, mode):
+def load_weights_to_flatresnet(source, net, num_classes,  mode):
     checkpoint = torch.load(source)
     net_old = checkpoint['net']
 
@@ -71,7 +56,7 @@ def load_weights_to_flatresnet(source, net, num_classes, dataset, mode):
         if isinstance(m, nn.Conv2d):
             m.weight.data = torch.nn.Parameter(store_data[element])
             element += 1
-    
+
     store_data = []
     store_data_bias = []
     store_data_rm = []
@@ -95,12 +80,12 @@ def load_weights_to_flatresnet(source, net, num_classes, dataset, mode):
     if mode == 'submit':
         #if dataset is 'imagenet12' or dataset is 'daimlerpedcls':
         net.fcs[0].weight.data = torch.nn.Parameter(net_old.fcs[0].weight.data)
-        net.fcs[0].bias.data = torch.nn.Parameter(net_old.fcs[0].bias.data)  
+        net.fcs[0].bias.data = torch.nn.Parameter(net_old.fcs[0].bias.data)
     '''
         else:
-    
+
             net.fcs[0].weight.data = torch.nn.Parameter(net_old.module.fcs[0].weight.data)
-            net.fcs[0].bias.data = torch.nn.Parameter(net_old.module.fcs[0].bias.data)  
+            net.fcs[0].bias.data = torch.nn.Parameter(net_old.module.fcs[0].bias.data)
     '''
     del net_old
     return net

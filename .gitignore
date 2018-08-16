@@ -12,7 +12,7 @@ __pycache__/
 dataset/
 result/
 result_depthwise/
-result_depthwise_last/
+result_pointwise_last/
 # Distribution / packaging
 .Python
 build/
