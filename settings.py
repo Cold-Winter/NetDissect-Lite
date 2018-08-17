@@ -3,14 +3,14 @@ GPU = True                                  # running on GPU is highly suggested
 TEST_MODE = False                           # turning on the testmode means the code will run on a small dataset.
 CLEAN = True                               # set to "True" if you want to clean the temporary large files after generating result
 MODEL = 'resnet26'                          # model arch: resnet18, alexnet, resnet50, densenet161
-DATASET = 'cifar100'                       # model trained on: places365 or imagenet
+DATASET = 'imagenet'                       # model trained on: places365 or imagenet
 QUANTILE = 0.005                            # the threshold used for activation
 SEG_THRESHOLD = 0.04                        # the threshold used for visualization
 SCORE_THRESHOLD = 0.04                      # the threshold used for IoU score (in HTML file)
 TOPN = 10                                   # to show top N image with highest activation for each unit
 PARALLEL = 1                                # how many process is used for tallying (Experiments show that 1 is the fastest)
 CATAGORIES = ["object", "part","scene","texture","color"] # concept categories that are chosen to detect: "object", "part", "scene", "material", "texture", "color"
-OUTPUT_FOLDER = "result/pytorch_"+MODEL+"_"+DATASET # result will be stored in this folder
+OUTPUT_FOLDER = "result/0_depthwise_pytorch_"+MODEL+"_"+DATASET # result will be stored in this folder
 
 ########### sub settings ###########
 # In most of the case, you don't have to change them.
@@ -48,7 +48,7 @@ if MODEL == 'resnet18':
         MODEL_PARALLEL = False
 if MODEL == 'resnet26':
     FEATURE_NAMES = ['blocks.2.3.SeparableConv2d2.pointwise.0']
-    if DATASET == 'places365':
+    if DATASET == 'imagenet':
         MODEL_FILE = 'zoo/imagenet12.t7'
         MODEL_PARALLEL = True
     elif DATASET == 'cifar100':

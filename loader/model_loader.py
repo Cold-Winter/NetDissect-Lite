@@ -33,7 +33,7 @@ def loadmodel(hook_fn):
     for name in settings.FEATURE_NAMES:
         #print name
         #print model._modules.get('conv1')._modules.get('depthwise')[0].register_forward_hook(hook_fn)
-        print model._modules.get('blocks')._modules.get('2')._modules.get('3')._modules.get('SeparableConv2d1')._modules.get('depthwise')[0].register_forward_hook(hook_fn)
+        model._modules.get('blocks')._modules.get('0')._modules.get('3')._modules.get('SeparableConv2d2')._modules.get('depthwise')[0].register_forward_hook(hook_fn)
         #model._modules.get(name).register_forward_hook(hook_fn)
     if settings.GPU:
         model.cuda()
